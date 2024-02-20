@@ -9,7 +9,21 @@ public class Usuarios {
     private String numeroIdentificacion;
     private String correoElectronico;
     private String contrasena;
+    Banco ownedByBanco;
     private List<CuentaAhorros> listaCuentaAhorros = new ArrayList<>();
+
+    public Usuarios(
+            String nombre,
+            String direccion,
+            String numeroIdentificacion,
+            String correoElectronico,
+            String contrasena) {
+        this.nombre = nombre;
+        this.direccion = direccion;
+        this.numeroIdentificacion = numeroIdentificacion;
+        this.correoElectronico = correoElectronico;
+        this.contrasena = contrasena;
+    }
 
     public String getNombre() {
         return nombre;

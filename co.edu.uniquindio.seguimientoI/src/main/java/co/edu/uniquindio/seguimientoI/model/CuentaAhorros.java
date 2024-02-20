@@ -6,6 +6,13 @@ public class CuentaAhorros {
     private int numeroIdentificacion;
     private double saldo;
     private Usuarios usuario;
+    Banco ownedByBanco;
+
+    public CuentaAhorros(int numeroIdentificacion, double saldo, Usuarios usuario) {
+        this.numeroIdentificacion = numeroIdentificacion;
+        this.saldo = saldo;
+        this.usuario = usuario;
+    }
 
     public int getNumeroIdentificacion() {
         return numeroIdentificacion;
