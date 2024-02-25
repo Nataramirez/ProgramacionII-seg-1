@@ -108,6 +108,7 @@ public class Banco {
         return usuarioAsociado;
     }
 
+
     /**
      * Método que verificado un usuario, crea una nueva cuenta de ahorros con saldo inicial.
      * @param idUsuario
@@ -119,6 +120,8 @@ public class Banco {
         if (consultarUsuario(idUsuario)){
             CuentaAhorro cuentaAhorro = new CuentaAhorro(crearIdCuenta(), saldo, obtenerUsuario(idUsuario));
             cuentasAhorros.add(cuentaAhorro);
+            Usuario usuario = obtenerUsuario(idUsuario);
+            usuario.getListaCuentaAhorro().add(cuentaAhorro);
             cuentaCreada = true;
         }return cuentaCreada;
         
