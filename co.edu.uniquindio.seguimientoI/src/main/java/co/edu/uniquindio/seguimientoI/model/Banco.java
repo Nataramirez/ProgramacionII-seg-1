@@ -124,7 +124,7 @@ public class Banco {
             usuario.getListaCuentaAhorro().add(cuentaAhorro);
             cuentaCreada = true;
         }return cuentaCreada;
-        
+
     }
 
 
@@ -216,22 +216,6 @@ public class Banco {
     }
 
     /**
-     * Método que determina si una cuenta de ahorros existe o no.
-     * @param numeroCuenta
-     * @return
-     */
-    public boolean consultarCuentaAhorros(String numeroCuenta){
-        boolean cuentaExiste = false;
-        for (CuentaAhorro cuentaAhorro : cuentasAhorros) {
-            if (cuentaAhorro.getNumeroIdentificacion().equals(numeroCuenta)) {
-                cuentaExiste = true;
-                break;
-            }
-        }
-        return cuentaExiste;
-    }
-
-    /**
      * Método que verifica si una cuenta tiene saldo suficiente para realizar una transacción.
      * @param numeroCuenta
      * @param monto
@@ -250,6 +234,51 @@ public class Banco {
             }
         }
         return saldoSuficiente;
+    }
+
+    /**
+     * Método que retorna una cuenta de ahorros existente
+     * @param numeroCuenta
+     * @return
+     */
+    public CuentaAhorro obtenerCuentaAhorros(String numeroCuenta) {
+        CuentaAhorro cuentaExistente = null;
+        for (CuentaAhorro cuentaAhorro : cuentasAhorros) {
+            if (cuentaAhorro.getNumeroIdentificacion().equals(numeroCuenta)) {
+                cuentaExistente = cuentaAhorro;
+                break;
+            }
+        }
+        return cuentaExistente;
+    }
+
+    public boolean crearTransaccion(
+            String idCuentaOrigen,
+            String idCuentaDestino,
+            double valorTransferencia,
+            CategoriaGasto categoriaGasto){
+
+        boolean trasaccionExitosa = false;
+
+        CuentaAhorro cuentaOrigen = obtenerCuentaAhorros(idCuentaOrigen);
+        CuentaAhorro cuentaDestino = obtenerCuentaAhorros(idCuentaDestino);
+
+        if (buscarCuenta(idCuentaDestino) && buscarCuenta(idCuentaOrigen) && verificarSaldoSuficiente(idCuentaDestino, valorTransferencia)) {
+
+            Transaccion transaccionCuentaOrigen = new Transaccion(cuentaOrigen, cuentaDestino, valorTransferencia, LocalDateTime.now(), categoriaGasto, TipoTransaccion.SALIDA);
+            CuentaAhorro cuentaProcedencia = obtenerCuentaAhorros(cuentaOrigen);
+            cuentaProcedencia.getListaTransaciones().add(transaccionCuentaOrigen);
+            cuentaProcedencia.setSaldo(cuentaProcedencia.getSaldo()-valorTransferencia-200);
+
+            Transaccion transaccionCuentaLlegada = new Transaccion(cuentaOrigen, cuentaDestino, valorTransferencia, LocalDateTime.now(), categoriaGasto, TipoTransaccion.ENTRADA);
+            CuentaAhorro cuentaLlegada = obtenerCuentaAhorros(cuentaDestino);
+            cuentaLlegada.getListaTransaciones().add(transaccionCuentaLlegada);
+            cuentaLlegada.setSaldo(cuentaLlegada.getSaldo()+valorTransferencia);
+
+            trasaccionExitosa = true;
+        }
+        return trasaccionExitosa;
+    }
     }
 }
 
