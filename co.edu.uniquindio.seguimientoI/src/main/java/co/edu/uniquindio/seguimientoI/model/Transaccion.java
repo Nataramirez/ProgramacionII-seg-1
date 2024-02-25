@@ -1,5 +1,8 @@
 package co.edu.uniquindio.seguimientoI.model;
 
 public class Transaccion {
-    Banco ownedByBanco;
+    /**
+     * las transacciones deben estar contenidas en las ceuntas
+     */
+
 }
