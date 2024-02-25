@@ -1,6 +1,10 @@
 package co.edu.uniquindio.seguimientoI.model;
+import java.time.LocalDateTime;
+import co.edu.uniquindio.seguimientoI.enums.CategoriaGasto;
+import co.edu.uniquindio.seguimientoI.enums.TipoTransaccion;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class Banco {
@@ -81,18 +85,21 @@ public class Banco {
         return cuentaExiste;
     }
 
+    public String crearCadenaId(){
+        String cadena = "";
+        while (cadena.length() != 10) {
+            cadena = Long.toString((long) (Math.random() * (10e9)));
+        } return cadena;
+    }
+
     /**
-     * Método que genera un número aleatorio de 10 dígitos y lo convierte en String.
+     * Método que crea un nuevo número de cuenta.
      */
     public String crearIdCuenta() {
-
-        String idCuentaNueva = "";
-        while (buscarCuenta(idCuentaNueva))
-            while (idCuentaNueva.length() != 10) {
-                idCuentaNueva = Long.toString((long) (Math.random() * (10e9)));
-            }
-        return idCuentaNueva;
-
+        String idCuentaNueva = crearCadenaId();
+        while (buscarCuenta(idCuentaNueva)){
+            idCuentaNueva = crearCadenaId();
+        } return idCuentaNueva;
     }
 
     /**
@@ -111,6 +118,12 @@ public class Banco {
         return usuarioAsociado;
     }
 
+    /**
+     * Método que verificado un usuario, crea una nueva cuenta de ahorros con saldo inicial.
+     * @param idUsuario
+     * @param saldo
+     * @return
+     */
     public boolean crearCuentaAhorros(String idUsuario, double saldo){
         boolean cuentaCreada = false;
         if (consultarUsuario(idUsuario)){
@@ -118,6 +131,7 @@ public class Banco {
             getCuentasAhorros().add(cuentaAhorro);
             cuentaCreada = true;
         }return cuentaCreada;
+        
     }
 
 
@@ -206,6 +220,43 @@ public class Banco {
             datosUsuario = usuario.toString();
         }
         return datosUsuario;
+    }
+
+    /**
+     * Método que determina si una cuenta de ahorros existe o no.
+     * @param numeroCuenta
+     * @return
+     */
+    public boolean consultarCuentaAhorros(String numeroCuenta){
+        boolean cuentaExiste = false;
+        for (CuentaAhorro cuentaAhorro : cuentasAhorros) {
+            if (cuentaAhorro.getNumeroIdentificacion().equals(numeroCuenta)) {
+                cuentaExiste = true;
+                break;
+            }
+        }
+        return cuentaExiste;
+    }
+
+    /**
+     * Método que verifica si una cuenta tiene saldo suficiente para realizar una transacción.
+     * @param numeroCuenta
+     * @param monto
+     * @return
+     */
+    public boolean verificarSaldoSuficiente(String numeroCuenta, double monto){
+        boolean saldoSuficiente = false;
+        for (CuentaAhorro cuentaAhorro : cuentasAhorros) {
+            if (cuentaAhorro.getNumeroIdentificacion().equals(numeroCuenta)) {
+                double saldo = cuentaAhorro.getSaldo();
+                if (saldo >= (monto + 200)){
+                    saldoSuficiente = true;
+                    break;
+                }
+                break;
+            }
+        }
+        return saldoSuficiente;
     }
 }
 

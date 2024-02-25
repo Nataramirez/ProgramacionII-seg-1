@@ -3,6 +3,7 @@ package co.edu.uniquindio.seguimientoI.model;
 import co.edu.uniquindio.seguimientoI.enums.CategoriaGasto;
 import co.edu.uniquindio.seguimientoI.enums.TipoTransaccion;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 public class Transaccion {
@@ -27,6 +28,9 @@ public class Transaccion {
             this.categoria = categoria;
             this.costoTransaccion = 200;
             this.tipoTransaccion = tipoTransaccion;
+    }
+
+    public Transaccion(String cuentaOrigen, String cuentaDestino, double monto, LocalDateTime now, CategoriaGasto categoriaGasto, TipoTransaccion tipoTransaccion) {
     }
 
     public CuentaAhorro getCuentaOrigen() {
