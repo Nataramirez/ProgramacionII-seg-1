@@ -216,6 +216,22 @@ public class Banco {
     }
 
     /**
+     * Método que retorna la cuenta de ahorros encontrada
+     * @param numeroCuenta
+     * @return
+     */
+    public CuentaAhorro consultarCuentaAhorros(String numeroCuenta){
+        CuentaAhorro cuentaEncontrada = new CuentaAhorro();
+        for (CuentaAhorro cuentaAhorro : cuentasAhorros) {
+            if (cuentaAhorro.getNumeroIdentificacion().equals(numeroCuenta)) {
+                cuentaEncontrada = cuentaAhorro;
+                break;
+            }
+        }
+        return cuentaEncontrada;
+    }
+
+    /**
      * Método que verifica si una cuenta tiene saldo suficiente para realizar una transacción.
      * @param numeroCuenta
      * @param monto
@@ -223,15 +239,10 @@ public class Banco {
      */
     public boolean verificarSaldoSuficiente(String numeroCuenta, double monto){
         boolean saldoSuficiente = false;
-        for (CuentaAhorro cuentaAhorro : cuentasAhorros) {
-            if (cuentaAhorro.getNumeroIdentificacion().equals(numeroCuenta)) {
-                double saldo = cuentaAhorro.getSaldo();
-                if (saldo >= (monto + 200)){
-                    saldoSuficiente = true;
-                    break;
-                }
-                break;
-            }
+        CuentaAhorro cuentaOrigen = consultarCuentaAhorros(numeroCuenta);
+        double saldo = cuentaOrigen.getSaldo();
+        if (saldo >= (monto + 200)){
+            saldoSuficiente = true;
         }
         return saldoSuficiente;
     }
@@ -242,7 +253,7 @@ public class Banco {
      * @return
      */
     public CuentaAhorro obtenerCuentaAhorros(String numeroCuenta) {
-        CuentaAhorro cuentaExistente = null;
+        CuentaAhorro cuentaExistente = new CuentaAhorro();
         for (CuentaAhorro cuentaAhorro : cuentasAhorros) {
             if (cuentaAhorro.getNumeroIdentificacion().equals(numeroCuenta)) {
                 cuentaExistente = cuentaAhorro;
@@ -264,21 +275,17 @@ public class Banco {
         CuentaAhorro cuentaDestino = obtenerCuentaAhorros(idCuentaDestino);
 
         if (buscarCuenta(idCuentaDestino) && buscarCuenta(idCuentaOrigen) && verificarSaldoSuficiente(idCuentaDestino, valorTransferencia)) {
-
             Transaccion transaccionCuentaOrigen = new Transaccion(cuentaOrigen, cuentaDestino, valorTransferencia, LocalDateTime.now(), categoriaGasto, TipoTransaccion.SALIDA);
-            CuentaAhorro cuentaProcedencia = obtenerCuentaAhorros(cuentaOrigen);
-            cuentaProcedencia.getListaTransaciones().add(transaccionCuentaOrigen);
-            cuentaProcedencia.setSaldo(cuentaProcedencia.getSaldo()-valorTransferencia-200);
+            cuentaOrigen.getListaTransaciones().add(transaccionCuentaOrigen);
+            cuentaOrigen.setSaldo(cuentaOrigen.getSaldo()-valorTransferencia-200);
 
             Transaccion transaccionCuentaLlegada = new Transaccion(cuentaOrigen, cuentaDestino, valorTransferencia, LocalDateTime.now(), categoriaGasto, TipoTransaccion.ENTRADA);
-            CuentaAhorro cuentaLlegada = obtenerCuentaAhorros(cuentaDestino);
-            cuentaLlegada.getListaTransaciones().add(transaccionCuentaLlegada);
-            cuentaLlegada.setSaldo(cuentaLlegada.getSaldo()+valorTransferencia);
+            cuentaDestino.getListaTransaciones().add(transaccionCuentaLlegada);
+            cuentaDestino.setSaldo(cuentaDestino.getSaldo()+valorTransferencia);
 
             trasaccionExitosa = true;
         }
         return trasaccionExitosa;
-    }
     }
 }
 
