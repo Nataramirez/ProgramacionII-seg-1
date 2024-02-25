@@ -11,6 +11,7 @@ public class CuentaAhorro {
     private Usuario usuario;
     private List<Transaccion> listaTransaciones;
 
+    public CuentaAhorro(){}
     public CuentaAhorro(String numeroIdentificacion, double saldo, Usuario usuario) {
         this.numeroIdentificacion = numeroIdentificacion;
         this.saldo = saldo;
