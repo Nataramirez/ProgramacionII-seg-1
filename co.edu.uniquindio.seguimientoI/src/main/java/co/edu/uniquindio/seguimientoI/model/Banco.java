@@ -124,7 +124,7 @@ public class Banco {
             usuario.getListaCuentaAhorro().add(cuentaAhorro);
             cuentaCreada = true;
         }return cuentaCreada;
-        
+
     }
 
 
@@ -245,6 +245,47 @@ public class Banco {
             saldoSuficiente = true;
         }
         return saldoSuficiente;
+    }
+
+    /**
+     * Método que retorna una cuenta de ahorros existente
+     * @param numeroCuenta
+     * @return
+     */
+    public CuentaAhorro obtenerCuentaAhorros(String numeroCuenta) {
+        CuentaAhorro cuentaExistente = new CuentaAhorro();
+        for (CuentaAhorro cuentaAhorro : cuentasAhorros) {
+            if (cuentaAhorro.getNumeroIdentificacion().equals(numeroCuenta)) {
+                cuentaExistente = cuentaAhorro;
+                break;
+            }
+        }
+        return cuentaExistente;
+    }
+
+    public boolean crearTransaccion(
+            String idCuentaOrigen,
+            String idCuentaDestino,
+            double valorTransferencia,
+            CategoriaGasto categoriaGasto){
+
+        boolean trasaccionExitosa = false;
+
+        CuentaAhorro cuentaOrigen = obtenerCuentaAhorros(idCuentaOrigen);
+        CuentaAhorro cuentaDestino = obtenerCuentaAhorros(idCuentaDestino);
+
+        if (buscarCuenta(idCuentaDestino) && buscarCuenta(idCuentaOrigen) && verificarSaldoSuficiente(idCuentaDestino, valorTransferencia)) {
+            Transaccion transaccionCuentaOrigen = new Transaccion(cuentaOrigen, cuentaDestino, valorTransferencia, categoriaGasto, TipoTransaccion.SALIDA);
+            cuentaOrigen.getListaTransaciones().add(transaccionCuentaOrigen);
+            cuentaOrigen.setSaldo(cuentaOrigen.getSaldo()-valorTransferencia-200);
+
+            Transaccion transaccionCuentaLlegada = new Transaccion(cuentaOrigen, cuentaDestino, valorTransferencia, categoriaGasto, TipoTransaccion.ENTRADA);
+            cuentaDestino.getListaTransaciones().add(transaccionCuentaLlegada);
+            cuentaDestino.setSaldo(cuentaDestino.getSaldo()+valorTransferencia);
+
+            trasaccionExitosa = true;
+        }
+        return trasaccionExitosa;
     }
 }
 
