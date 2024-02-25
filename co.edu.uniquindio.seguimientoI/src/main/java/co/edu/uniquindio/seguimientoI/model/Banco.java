@@ -44,16 +44,6 @@ public class Banco {
     }
 
 
-
-
-    /**
-     * esta clase debe contener los métodos de crud usuarios, crud cuenta
-     * para crear una cuenta necesito un usuario previamente creado
-     * uso de try
-     */
-
-
-
     /**
      * Método para consultar usuario por número de identificación
      * @param numeroIdentificacion
@@ -128,7 +118,7 @@ public class Banco {
         boolean cuentaCreada = false;
         if (consultarUsuario(idUsuario)){
             CuentaAhorro cuentaAhorro = new CuentaAhorro(crearIdCuenta(), saldo, obtenerUsuario(idUsuario));
-            getCuentasAhorros().add(cuentaAhorro);
+            cuentasAhorros.add(cuentaAhorro);
             cuentaCreada = true;
         }return cuentaCreada;
         
