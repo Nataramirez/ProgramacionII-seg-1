@@ -10,7 +10,7 @@ public class Transaccion {
     private CuentaAhorro cuentaOrigen;
      private CuentaAhorro cuentaDestino;
     private double valorTransferencia;
-    private Date fechaTransferencia;
+    private LocalDateTime fechaTransferencia;
      private CategoriaGasto categoria;
     private double costoTransaccion;
     private TipoTransaccion tipoTransaccion;
@@ -24,14 +24,12 @@ public class Transaccion {
             this.cuentaOrigen = cuentaOrigen;
             this.cuentaDestino = cuentaDestino;
             this.valorTransferencia = valorTransferencia;
-            this.fechaTransferencia = new Date();
+            this.fechaTransferencia = LocalDateTime.now();
             this.categoria = categoria;
             this.costoTransaccion = 200;
             this.tipoTransaccion = tipoTransaccion;
     }
 
-    public Transaccion(CuentaAhorro cuentaOrigen, CuentaAhorro cuentaDestino, double monto, LocalDateTime now, CategoriaGasto categoriaGasto, TipoTransaccion tipoTransaccion) {
-    }
 
     public CuentaAhorro getCuentaOrigen() {
         return cuentaOrigen;
@@ -57,11 +55,11 @@ public class Transaccion {
         this.valorTransferencia = valorTransferencia;
     }
 
-    public Date getFechaTransferencia() {
+    public LocalDateTime getFechaTransferencia() {
         return fechaTransferencia;
     }
 
-    public void setFechaTransferencia(Date fechaTransferencia) {
+    public void setFechaTransferencia(LocalDateTime fechaTransferencia) {
         this.fechaTransferencia = fechaTransferencia;
     }
 

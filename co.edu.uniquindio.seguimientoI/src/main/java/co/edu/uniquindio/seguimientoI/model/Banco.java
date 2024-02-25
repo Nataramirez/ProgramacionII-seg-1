@@ -275,11 +275,11 @@ public class Banco {
         CuentaAhorro cuentaDestino = obtenerCuentaAhorros(idCuentaDestino);
 
         if (buscarCuenta(idCuentaDestino) && buscarCuenta(idCuentaOrigen) && verificarSaldoSuficiente(idCuentaDestino, valorTransferencia)) {
-            Transaccion transaccionCuentaOrigen = new Transaccion(cuentaOrigen, cuentaDestino, valorTransferencia, LocalDateTime.now(), categoriaGasto, TipoTransaccion.SALIDA);
+            Transaccion transaccionCuentaOrigen = new Transaccion(cuentaOrigen, cuentaDestino, valorTransferencia, categoriaGasto, TipoTransaccion.SALIDA);
             cuentaOrigen.getListaTransaciones().add(transaccionCuentaOrigen);
             cuentaOrigen.setSaldo(cuentaOrigen.getSaldo()-valorTransferencia-200);
 
-            Transaccion transaccionCuentaLlegada = new Transaccion(cuentaOrigen, cuentaDestino, valorTransferencia, LocalDateTime.now(), categoriaGasto, TipoTransaccion.ENTRADA);
+            Transaccion transaccionCuentaLlegada = new Transaccion(cuentaOrigen, cuentaDestino, valorTransferencia, categoriaGasto, TipoTransaccion.ENTRADA);
             cuentaDestino.getListaTransaciones().add(transaccionCuentaLlegada);
             cuentaDestino.setSaldo(cuentaDestino.getSaldo()+valorTransferencia);
 
