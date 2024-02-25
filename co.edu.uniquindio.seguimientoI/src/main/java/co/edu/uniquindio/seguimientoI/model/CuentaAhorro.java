@@ -2,16 +2,20 @@ package co.edu.uniquindio.seguimientoI.model;
 
 import co.edu.uniquindio.seguimientoI.enums.TipoTransaccion;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class CuentaAhorro {
     private String numeroIdentificacion;
     private double saldo;
     private Usuario usuario;
-    Banco ownedByBanco;
+    private List<Transaccion> listaTransaciones;
 
     public CuentaAhorro(String numeroIdentificacion, double saldo, Usuario usuario) {
         this.numeroIdentificacion = numeroIdentificacion;
         this.saldo = saldo;
         this.usuario = usuario;
+        this.listaTransaciones = new ArrayList<Transaccion>();
     }
 
     public String getNumeroIdentificacion() {
@@ -39,12 +43,21 @@ public class CuentaAhorro {
         this.usuario = usuario;
     }
 
+    public List<Transaccion> getListaTransaciones() {
+        return listaTransaciones;
+    }
+
+    public void setListaTransaciones(List<Transaccion> listaTransaciones) {
+        this.listaTransaciones = listaTransaciones;
+    }
+
     @Override
     public String toString() {
-        return "CuentaAhorros{" +
-                "numeroIdentificacion=" + numeroIdentificacion +
+        return "CuentaAhorro{" +
+                "numeroIdentificacion='" + numeroIdentificacion + '\'' +
                 ", saldo=" + saldo +
                 ", usuario=" + usuario +
+                ", listaTransaciones=" + listaTransaciones +
                 '}';
     }
 }
