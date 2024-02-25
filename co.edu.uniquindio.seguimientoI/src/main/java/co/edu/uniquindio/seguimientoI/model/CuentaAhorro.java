@@ -9,13 +9,14 @@ public class CuentaAhorro {
     private String numeroIdentificacion;
     private double saldo;
     private Usuario usuario;
-    private List<Transaccion> listaTransaciones = new ArrayList<>();
+    private List<Transaccion> listaTransaciones;
 
     public CuentaAhorro(){}
     public CuentaAhorro(String numeroIdentificacion, double saldo, Usuario usuario) {
         this.numeroIdentificacion = numeroIdentificacion;
         this.saldo = saldo;
         this.usuario = usuario;
+        this.listaTransaciones = new ArrayList<Transaccion>();
     }
 
     public String getNumeroIdentificacion() {
