@@ -2,7 +2,6 @@ package co.edu.uniquindio.seguimientoI.model;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class Banco {
     private String nombre;
@@ -49,16 +48,23 @@ public class Banco {
      * uso de try
      */
 
-    public boolean consultarUsuario(String numeroIdentificacion) {
+
+
+    /**
+     * Método para consultar usuario por número de identificación
+     * @param numeroIdentificacion
+     * @return
+     */
+    public boolean consultarUsuario(String numeroIdentificacion){
         boolean usuarioExiste = false;
         for (Usuario usuario : usuarios) {
             if (usuario.getNumeroIdentificacion().equals(numeroIdentificacion)) {
                 usuarioExiste = true;
+                break;
             }
         }
         return usuarioExiste;
     }
-
 
     /**
      * Método que busca una cuenta en un ArrayList.
@@ -90,26 +96,116 @@ public class Banco {
     }
 
     /**
-     * Método que busca y retorna un ususario para ser asociado a una nueva cuenta de ahorros
+     * Método que busca y retorna un ususario
      * @param idUsuario
      * @return
      */
-    public Usuario asociarUsuario(String idUsuario) {
-        Usuario usuarioAsociado = null;
+    public Usuario obtenerUsuario(String idUsuario) {
+        Usuario usuarioAsociado = new Usuario();
         for (Usuario usuario : usuarios) {
             if (usuario.getNumeroIdentificacion().equals(idUsuario)) {
                 usuarioAsociado = usuario;
+                break;
             }
-        }return usuarioAsociado;
+        }
+        return usuarioAsociado;
     }
 
     public boolean crearCuentaAhorros(String idUsuario, double saldo){
         boolean cuentaCreada = false;
         if (consultarUsuario(idUsuario)){
-            CuentaAhorro cuentaAhorro = new CuentaAhorro(crearIdCuenta(), saldo, asociarUsuario(idUsuario));
+            CuentaAhorro cuentaAhorro = new CuentaAhorro(crearIdCuenta(), saldo, obtenerUsuario(idUsuario));
             getCuentasAhorros().add(cuentaAhorro);
             cuentaCreada = true;
         }return cuentaCreada;
+    }
+
+
+    /**
+     * Método para crear usuarios
+     * @param nombre
+     * @param direccion
+     * @param numeroIdentificacion
+     * @param correoElectronico
+     * @param contrasena
+     * @return
+     */
+    public boolean crearUsuario(
+            String nombre,
+            String direccion,
+            String numeroIdentificacion,
+            String correoElectronico,
+            String contrasena
+    ){
+        boolean usuarioCreado = false;
+        if(!consultarUsuario(numeroIdentificacion)){
+            Usuario nuevoUsuario = new Usuario(nombre, direccion, numeroIdentificacion, correoElectronico, contrasena);
+            usuarios.add(nuevoUsuario);
+            usuarioCreado = true;
+        }
+        return usuarioCreado;
+    }
+
+    /**
+     * Método para actulizar datos del usuario
+     * @param nombre
+     * @param direccion
+     * @param numeroIdentificacion
+     * @param correoElectronico
+     * @param contrasena
+     * @return
+     */
+    public boolean actualizarUsuario(
+            String nombre,
+            String direccion,
+            String numeroIdentificacion,
+            String correoElectronico,
+            String contrasena
+    ){
+        boolean usuarioActualizado = false;
+        if(consultarUsuario(numeroIdentificacion)){
+            Usuario usuario = obtenerUsuario(numeroIdentificacion);
+            usuario.setNombre(nombre);
+            usuario.setDireccion(direccion);
+            usuario.setNumeroIdentificacion(numeroIdentificacion);
+            usuario.setCorreoElectronico(correoElectronico);
+            usuario.setContrasena(contrasena);
+            usuarioActualizado = true;
+        }
+        return usuarioActualizado;
+    }
+
+    /**
+     * Método para eliminar usuario por número de identificación
+     * @param numeroIdentificacion
+     * @return
+     */
+    public boolean eliminarUsuario(String numeroIdentificacion){
+        boolean usuarioEliminado = false;
+        if(consultarUsuario(numeroIdentificacion)){
+            for (Usuario usuario: usuarios) {
+                if (usuario.getNumeroIdentificacion().equals(numeroIdentificacion)){
+                    usuarios.remove(usuario);
+                    usuarioEliminado = true;
+                    break;
+                }
+            }
+        }
+        return usuarioEliminado;
+    }
+
+    /**
+     * Método para leer los datos del usuario por medio de número de identificación
+     * @param numeroIdentificacion
+     * @return
+     */
+    public String leerDatosUsuario(String numeroIdentificacion){
+        String datosUsuario = "";
+        if(consultarUsuario(numeroIdentificacion)){
+            Usuario usuario = obtenerUsuario(numeroIdentificacion);
+            datosUsuario = usuario.toString();
+        }
+        return datosUsuario;
     }
 }
 
