@@ -1,6 +1,7 @@
 package co.edu.uniquindio.seguimientoI.model;
 
 import co.edu.uniquindio.seguimientoI.enums.CategoriaGasto;
+import co.edu.uniquindio.seguimientoI.enums.TipoTransaccion;
 
 import java.util.Date;
 
@@ -11,18 +12,21 @@ public class Transaccion {
     private Date fechaTransferencia;
      private CategoriaGasto categoria;
     private double costoTransaccion;
+    private TipoTransaccion tipoTransaccion;
 
     public Transaccion(
                 CuentaAhorro cuentaOrigen,
                 CuentaAhorro cuentaDestino,
                 double valorTransferencia,
-                CategoriaGasto categoria) {
+                CategoriaGasto categoria,
+                TipoTransaccion tipoTransaccion) {
             this.cuentaOrigen = cuentaOrigen;
             this.cuentaDestino = cuentaDestino;
             this.valorTransferencia = valorTransferencia;
             this.fechaTransferencia = new Date();
             this.categoria = categoria;
             this.costoTransaccion = 200;
+            this.tipoTransaccion = tipoTransaccion;
     }
 
     public CuentaAhorro getCuentaOrigen() {
@@ -73,6 +77,14 @@ public class Transaccion {
         this.costoTransaccion = costoTransaccion;
     }
 
+    public TipoTransaccion getTipoTransaccion() {
+        return tipoTransaccion;
+    }
+
+    public void setTipoTransaccion(TipoTransaccion tipoTransaccion) {
+        this.tipoTransaccion = tipoTransaccion;
+    }
+
     @Override
     public String toString() {
         return "Transaccion{" +
@@ -82,6 +94,7 @@ public class Transaccion {
                 ", fechaTransferencia=" + fechaTransferencia +
                 ", categoria=" + categoria +
                 ", costoTransaccion=" + costoTransaccion +
+                ", tipoTransaccion=" + tipoTransaccion +
                 '}';
     }
 }
