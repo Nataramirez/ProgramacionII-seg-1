@@ -30,7 +30,7 @@ public class Transaccion {
             this.tipoTransaccion = tipoTransaccion;
     }
 
-    public Transaccion(String cuentaOrigen, String cuentaDestino, double monto, LocalDateTime now, CategoriaGasto categoriaGasto, TipoTransaccion tipoTransaccion) {
+    public Transaccion(CuentaAhorro cuentaOrigen, CuentaAhorro cuentaDestino, double monto, LocalDateTime now, CategoriaGasto categoriaGasto, TipoTransaccion tipoTransaccion) {
     }
 
     public CuentaAhorro getCuentaOrigen() {
