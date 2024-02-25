@@ -67,6 +67,14 @@ public class Usuario {
         this.contrasena = contrasena;
     }
 
+    public List<CuentaAhorro> getListaCuentaAhorro() {
+        return listaCuentaAhorro;
+    }
+
+    public void setListaCuentaAhorro(List<CuentaAhorro> listaCuentaAhorro) {
+        this.listaCuentaAhorro = listaCuentaAhorro;
+    }
+
     @Override
     public String toString() {
         return "Usuarios{" +
