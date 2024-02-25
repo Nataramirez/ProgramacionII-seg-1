@@ -216,19 +216,19 @@ public class Banco {
     }
 
     /**
-     * Método que determina si una cuenta de ahorros existe o no.
+     * Método que retorna la cuenta de ahorros encontrada
      * @param numeroCuenta
      * @return
      */
-    public boolean consultarCuentaAhorros(String numeroCuenta){
-        boolean cuentaExiste = false;
+    public CuentaAhorro consultarCuentaAhorros(String numeroCuenta){
+        CuentaAhorro cuentaEncontrada = new CuentaAhorro();
         for (CuentaAhorro cuentaAhorro : cuentasAhorros) {
             if (cuentaAhorro.getNumeroIdentificacion().equals(numeroCuenta)) {
-                cuentaExiste = true;
+                cuentaEncontrada = cuentaAhorro;
                 break;
             }
         }
-        return cuentaExiste;
+        return cuentaEncontrada;
     }
 
     /**
@@ -239,15 +239,10 @@ public class Banco {
      */
     public boolean verificarSaldoSuficiente(String numeroCuenta, double monto){
         boolean saldoSuficiente = false;
-        for (CuentaAhorro cuentaAhorro : cuentasAhorros) {
-            if (cuentaAhorro.getNumeroIdentificacion().equals(numeroCuenta)) {
-                double saldo = cuentaAhorro.getSaldo();
-                if (saldo >= (monto + 200)){
-                    saldoSuficiente = true;
-                    break;
-                }
-                break;
-            }
+        CuentaAhorro cuentaOrigen = consultarCuentaAhorros(numeroCuenta);
+        double saldo = cuentaOrigen.getSaldo();
+        if (saldo >= (monto + 200)){
+            saldoSuficiente = true;
         }
         return saldoSuficiente;
     }
