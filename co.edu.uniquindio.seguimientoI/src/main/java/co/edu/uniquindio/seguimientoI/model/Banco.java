@@ -4,7 +4,6 @@ import co.edu.uniquindio.seguimientoI.enums.TipoTransaccion;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class Banco {
@@ -314,7 +313,14 @@ public class Banco {
         return transaccionesMes;
     }
 
-    public double sumarMontoTransaccion(String idCuentaAhorros, LocalDate fechaInicio, TipoTransaccion tipoTransaccion){
+    /**
+     * Método que suma las transacciones de un tipo en trasacciones de un mes (30 días).
+     * @param idCuentaAhorros
+     * @param fechaInicio
+     * @param tipoTransaccion
+     * @return
+     */
+    public double sumarMontoTransaccionTipo(String idCuentaAhorros, LocalDate fechaInicio, TipoTransaccion tipoTransaccion){
         double montosMes = 0;
         List<Transaccion> transaccionesMEs = clasificarCuentasMes(idCuentaAhorros, fechaInicio);
         for (Transaccion transaccion : transaccionesMEs) {
@@ -323,6 +329,42 @@ public class Banco {
             }
         } return montosMes;
     }
+
+    public double calcularPorcentaje(double valor1, double valor2){
+        return ((valor1)/(valor1 + valor2))*100;
+    }
+
+    /**
+     * Método que suma los montos por categoría de una cuenta de ahorros durante un mes.
+     * @param idCuentaAhorros
+     * @param fechaInicio
+     * @param categoriaGasto
+     * @return
+     */
+    public double sumarMontoTransaccionCategoria(String idCuentaAhorros, LocalDate fechaInicio, CategoriaGasto categoriaGasto){
+        double montosMesCategoria = 0;
+        List<Transaccion> transaccionesMEs = clasificarCuentasMes(idCuentaAhorros, fechaInicio);
+        for (Transaccion transaccion : transaccionesMEs) {
+            if(transaccion.getTipoTransaccion().equals(TipoTransaccion.SALIDA)){
+              if (transaccion.getCategoria().equals(categoriaGasto)) {
+                  montosMesCategoria += transaccion.getValorTransferencia();
+              }
+            }
+        } return montosMesCategoria;
+    }
+
+    public void obtenerGastosIngresosMes(String idCuentaAhorros, LocalDate fechaInicio){
+        double ingresosMes = sumarMontoTransaccionTipo(idCuentaAhorros, fechaInicio, TipoTransaccion.ENTRADA);
+        double gastosMes = sumarMontoTransaccionTipo(idCuentaAhorros, fechaInicio, TipoTransaccion.SALIDA);
+        double porcentajeIngresosMes = calcularPorcentaje(ingresosMes, gastosMes);
+        double porcentajesGastosMes = calcularPorcentaje(gastosMes, ingresosMes);
+        double gastosViajes = sumarMontoTransaccionCategoria(idCuentaAhorros, fechaInicio, CategoriaGasto.VIAJES);
+        double gastosFacturas = sumarMontoTransaccionCategoria(idCuentaAhorros, fechaInicio, CategoriaGasto.FACTURAS);
+        double gastosGasolina = sumarMontoTransaccionCategoria(idCuentaAhorros, fechaInicio, CategoriaGasto.GASOLINA);
+        double gastosRopa = sumarMontoTransaccionCategoria(idCuentaAhorros, fechaInicio, CategoriaGasto.ROPA);
+    }
+
+
 }
 
 
