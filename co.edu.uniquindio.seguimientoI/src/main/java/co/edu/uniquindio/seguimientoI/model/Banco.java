@@ -1,8 +1,8 @@
 package co.edu.uniquindio.seguimientoI.model;
-import java.time.LocalDateTime;
 import co.edu.uniquindio.seguimientoI.enums.CategoriaGasto;
 import co.edu.uniquindio.seguimientoI.enums.TipoTransaccion;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -263,6 +263,14 @@ public class Banco {
         return cuentaExistente;
     }
 
+    /**
+     * Método que crea transacciones actualizando las cuentas asociadas
+     * @param idCuentaOrigen
+     * @param idCuentaDestino
+     * @param valorTransferencia
+     * @param categoriaGasto
+     * @return
+     */
     public boolean crearTransaccion(
             String idCuentaOrigen,
             String idCuentaDestino,
@@ -286,6 +294,34 @@ public class Banco {
             trasaccionExitosa = true;
         }
         return trasaccionExitosa;
+    }
+
+    /**
+     * Método que reune en un ArrayList las transacciones realizadas en los 30 días posteriores a una fecha dada
+     * @param idCuentaAhorros
+     * @param fechaInicio
+     * @return
+     */
+    public ArrayList clasificarCuentasMes(String idCuentaAhorros, LocalDate fechaInicio){
+        ArrayList transaccionesMes = new ArrayList<Transaccion>();
+        CuentaAhorro cuentaAhorro = obtenerCuentaAhorros(idCuentaAhorros);
+        for (Transaccion transaccion : cuentaAhorro.getListaTransaciones()) {
+            for (LocalDate fecha = fechaInicio; fecha.isBefore(fechaInicio.plusDays(30)); fecha = fecha.plusDays(1)){
+                if(transaccion.getFechaTransferencia().equals(fecha));
+                transaccionesMes.add(transaccion);
+            }
+        }
+        return transaccionesMes;
+    }
+
+    public double sumarMontoTransaccion(String idCuentaAhorros, LocalDate fechaInicio, TipoTransaccion tipoTransaccion){
+        double montosMes = 0;
+        ArrayList transaccionesMEs = clasificarCuentasMes(idCuentaAhorros, fechaInicio);
+        for (Transaccion transaccion : transaccionesMEs) {
+            if(transaccion.getTipoTransaccion().equals(tipoTransaccion)){
+                montosMes += transaccion.getValorTransferencia();
+            }
+        } return montosMes
     }
 }
 
