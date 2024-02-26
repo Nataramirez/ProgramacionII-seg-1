@@ -302,8 +302,8 @@ public class Banco {
      * @param fechaInicio
      * @return
      */
-    public ArrayList clasificarCuentasMes(String idCuentaAhorros, LocalDate fechaInicio){
-        ArrayList transaccionesMes = new ArrayList<Transaccion>();
+    public List<Transaccion> clasificarCuentasMes(String idCuentaAhorros, LocalDate fechaInicio){
+        List<Transaccion> transaccionesMes = new ArrayList<Transaccion>();
         CuentaAhorro cuentaAhorro = obtenerCuentaAhorros(idCuentaAhorros);
         for (Transaccion transaccion : cuentaAhorro.getListaTransaciones()) {
             for (LocalDate fecha = fechaInicio; fecha.isBefore(fechaInicio.plusDays(30)); fecha = fecha.plusDays(1)){
@@ -316,12 +316,12 @@ public class Banco {
 
     public double sumarMontoTransaccion(String idCuentaAhorros, LocalDate fechaInicio, TipoTransaccion tipoTransaccion){
         double montosMes = 0;
-        ArrayList transaccionesMEs = clasificarCuentasMes(idCuentaAhorros, fechaInicio);
+        List<Transaccion> transaccionesMEs = clasificarCuentasMes(idCuentaAhorros, fechaInicio);
         for (Transaccion transaccion : transaccionesMEs) {
             if(transaccion.getTipoTransaccion().equals(tipoTransaccion)){
                 montosMes += transaccion.getValorTransferencia();
             }
-        } return montosMes
+        } return montosMes;
     }
 }
 
