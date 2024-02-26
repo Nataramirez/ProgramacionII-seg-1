@@ -1,4 +1,5 @@
 package co.edu.uniquindio.seguimientoI.model;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import co.edu.uniquindio.seguimientoI.enums.CategoriaGasto;
 import co.edu.uniquindio.seguimientoI.enums.TipoTransaccion;
@@ -267,7 +268,7 @@ public class Banco {
             String idCuentaOrigen,
             String idCuentaDestino,
             double valorTransferencia,
-            CategoriaGasto categoriaGasto){
+            CategoriaGasto categoriaGasto) {
 
         boolean trasaccionExitosa = false;
 
@@ -277,15 +278,66 @@ public class Banco {
         if (buscarCuenta(idCuentaDestino) && buscarCuenta(idCuentaOrigen) && verificarSaldoSuficiente(idCuentaDestino, valorTransferencia)) {
             Transaccion transaccionCuentaOrigen = new Transaccion(cuentaOrigen, cuentaDestino, valorTransferencia, categoriaGasto, TipoTransaccion.SALIDA);
             cuentaOrigen.getListaTransaciones().add(transaccionCuentaOrigen);
-            cuentaOrigen.setSaldo(cuentaOrigen.getSaldo()-valorTransferencia-200);
+            cuentaOrigen.setSaldo(cuentaOrigen.getSaldo() - valorTransferencia - 200);
 
             Transaccion transaccionCuentaLlegada = new Transaccion(cuentaOrigen, cuentaDestino, valorTransferencia, categoriaGasto, TipoTransaccion.ENTRADA);
             cuentaDestino.getListaTransaciones().add(transaccionCuentaLlegada);
-            cuentaDestino.setSaldo(cuentaDestino.getSaldo()+valorTransferencia);
+            cuentaDestino.setSaldo(cuentaDestino.getSaldo() + valorTransferencia);
 
             trasaccionExitosa = true;
         }
         return trasaccionExitosa;
+    }
+
+    /**
+     * Método para obtener las transacciones de una cuenta de ahorro
+     * @param cuentaAhorro
+     * @return
+     */
+    public List<Transaccion> obtenerTransacciones(CuentaAhorro cuentaAhorro){
+        return cuentaAhorro.getListaTransaciones();
+    }
+
+    /**
+     * Método para consultar saldo de la cuenta de ahorro mediante id y contraseña del usuario
+     * @param idUsuario
+     * @param contrasena
+     * @return
+     */
+    public double consultarSaldoCuenta(String idUsuario, String contrasena){
+        double saldoCuenta = 0;
+        for (CuentaAhorro cuentaAhorro: cuentasAhorros) {
+            Usuario usuario = cuentaAhorro.getUsuario();
+            if (usuario.getNumeroIdentificacion().equals(idUsuario) && usuario.getContrasena().equals(contrasena)){
+                saldoCuenta = cuentaAhorro.getSaldo();
+                obtenerTransacciones(cuentaAhorro);
+                break;
+            }
+        }
+        return saldoCuenta;
+    }
+
+    /**
+     * Método para obtener transacciones en un periodo determinado
+     * @param cuentaAhorro
+     * @param fechaInicial
+     * @param fechaFinal
+     * @return
+     */
+    public List<Transaccion> consultaTransacionesPorPeriodo(CuentaAhorro cuentaAhorro, LocalDate fechaInicial, LocalDate fechaFinal){
+        List<Transaccion> transaccionesPeriodo = new ArrayList<>();
+        for (Transaccion transaccion: cuentaAhorro.getListaTransaciones()) {
+            if (transaccion.getFechaTransferencia().equals(fechaInicial) || transaccion.getFechaTransferencia().equals(fechaFinal) ||
+            transaccion.getFechaTransferencia().isAfter(fechaInicial) || transaccion.getFechaTransferencia().isBefore(fechaFinal)){
+                transaccionesPeriodo.add(transaccion);
+            }
+        }
+        return transaccionesPeriodo;
+    }
+
+    public void ingresosMes(CuentaAhorro cuentaAhorro, String mes){
+
+
     }
 }
 

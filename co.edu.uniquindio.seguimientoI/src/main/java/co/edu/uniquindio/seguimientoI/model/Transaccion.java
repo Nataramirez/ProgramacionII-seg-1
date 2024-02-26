@@ -3,14 +3,14 @@ package co.edu.uniquindio.seguimientoI.model;
 import co.edu.uniquindio.seguimientoI.enums.CategoriaGasto;
 import co.edu.uniquindio.seguimientoI.enums.TipoTransaccion;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 public class Transaccion {
     private CuentaAhorro cuentaOrigen;
      private CuentaAhorro cuentaDestino;
     private double valorTransferencia;
-    private LocalDateTime fechaTransferencia;
+    private LocalDate fechaTransferencia;
      private CategoriaGasto categoria;
     private double costoTransaccion;
     private TipoTransaccion tipoTransaccion;
@@ -24,7 +24,7 @@ public class Transaccion {
             this.cuentaOrigen = cuentaOrigen;
             this.cuentaDestino = cuentaDestino;
             this.valorTransferencia = valorTransferencia;
-            this.fechaTransferencia = LocalDateTime.now();
+            this.fechaTransferencia = LocalDate.now();
             this.categoria = categoria;
             this.costoTransaccion = 200;
             this.tipoTransaccion = tipoTransaccion;
@@ -55,11 +55,11 @@ public class Transaccion {
         this.valorTransferencia = valorTransferencia;
     }
 
-    public LocalDateTime getFechaTransferencia() {
+    public LocalDate getFechaTransferencia() {
         return fechaTransferencia;
     }
 
-    public void setFechaTransferencia(LocalDateTime fechaTransferencia) {
+    public void setFechaTransferencia(LocalDate fechaTransferencia) {
         this.fechaTransferencia = fechaTransferencia;
     }
 
