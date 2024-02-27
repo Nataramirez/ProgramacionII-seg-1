@@ -1,6 +1,11 @@
 package co.edu.uniquindio.seguimientoI;
 import co.edu.uniquindio.seguimientoI.model.Banco;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.Random;
 
 public class Main {

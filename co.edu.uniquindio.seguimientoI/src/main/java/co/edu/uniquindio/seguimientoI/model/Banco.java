@@ -1,11 +1,13 @@
 package co.edu.uniquindio.seguimientoI.model;
-import java.time.LocalDateTime;
-import co.edu.uniquindio.seguimientoI.enums.CategoriaGasto;
-import co.edu.uniquindio.seguimientoI.enums.TipoTransaccion;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import co.edu.uniquindio.seguimientoI.enums.CategoriaGasto;
+import co.edu.uniquindio.seguimientoI.enums.Mes;
+import co.edu.uniquindio.seguimientoI.enums.TipoTransaccion;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+import java.util.*;
 
 public class Banco {
     private String nombre;
@@ -126,7 +128,6 @@ public class Banco {
         }return cuentaCreada;
 
     }
-
 
     /**
      * Método para crear usuarios
@@ -263,29 +264,230 @@ public class Banco {
         return cuentaExistente;
     }
 
+    /**
+     * Método que crea transacciones actualizando las cuentas asociadas
+     * @param idCuentaOrigen
+     * @param idCuentaDestino
+     * @param valorTransferencia
+     * @param categoriaGasto
+     * @return
+     */
     public boolean crearTransaccion(
             String idCuentaOrigen,
             String idCuentaDestino,
             double valorTransferencia,
-            CategoriaGasto categoriaGasto){
+            CategoriaGasto categoriaGasto) {
 
         boolean trasaccionExitosa = false;
 
         CuentaAhorro cuentaOrigen = obtenerCuentaAhorros(idCuentaOrigen);
         CuentaAhorro cuentaDestino = obtenerCuentaAhorros(idCuentaDestino);
 
-        if (buscarCuenta(idCuentaDestino) && buscarCuenta(idCuentaOrigen) && verificarSaldoSuficiente(idCuentaDestino, valorTransferencia)) {
-            Transaccion transaccionCuentaOrigen = new Transaccion(cuentaOrigen, cuentaDestino, valorTransferencia, categoriaGasto, TipoTransaccion.SALIDA);
+        if (buscarCuenta(idCuentaDestino) && buscarCuenta(idCuentaOrigen) &&
+                verificarSaldoSuficiente(idCuentaDestino, valorTransferencia)) {
+            Transaccion transaccionCuentaOrigen = new Transaccion(
+                    cuentaOrigen, cuentaDestino, valorTransferencia, categoriaGasto, TipoTransaccion.SALIDA);
             cuentaOrigen.getListaTransaciones().add(transaccionCuentaOrigen);
-            cuentaOrigen.setSaldo(cuentaOrigen.getSaldo()-valorTransferencia-200);
+            cuentaOrigen.setSaldo(cuentaOrigen.getSaldo() - valorTransferencia - 200);
 
-            Transaccion transaccionCuentaLlegada = new Transaccion(cuentaOrigen, cuentaDestino, valorTransferencia, categoriaGasto, TipoTransaccion.ENTRADA);
+            Transaccion transaccionCuentaLlegada = new Transaccion(
+                    cuentaOrigen, cuentaDestino, valorTransferencia, categoriaGasto, TipoTransaccion.ENTRADA);
             cuentaDestino.getListaTransaciones().add(transaccionCuentaLlegada);
-            cuentaDestino.setSaldo(cuentaDestino.getSaldo()+valorTransferencia);
+            cuentaDestino.setSaldo(cuentaDestino.getSaldo() + valorTransferencia);
 
             trasaccionExitosa = true;
         }
         return trasaccionExitosa;
+    }
+
+    /**
+     * Método para obtener las transacciones de una cuenta de ahorro
+     * @param cuentaAhorro
+     * @return
+     */
+    public List<Transaccion> obtenerTransacciones(CuentaAhorro cuentaAhorro){
+        return cuentaAhorro.getListaTransaciones();
+    }
+
+    /**
+     * Método para consultar saldo de la cuenta de ahorro mediante id y contraseña del usuario
+     * @param idUsuario
+     * @param contrasena
+     * @return
+     */
+    public double consultarSaldoCuenta(String idUsuario, String contrasena){
+        double saldoCuenta = 0;
+        for (CuentaAhorro cuentaAhorro: cuentasAhorros) {
+            Usuario usuario = cuentaAhorro.getUsuario();
+            if (usuario.getNumeroIdentificacion().equals(idUsuario) && usuario.getContrasena().equals(contrasena)){
+                saldoCuenta = cuentaAhorro.getSaldo();
+                obtenerTransacciones(cuentaAhorro);
+                break;
+            }
+        }
+        return saldoCuenta;
+    }
+
+    /**
+     * Método para obtener transacciones en un periodo determinado
+     * @param cuentaAhorro
+     * @param fechaInicial
+     * @param fechaFinal
+     * @return
+     */
+    public List<Transaccion> consultaTransacionesPorPeriodo(
+            CuentaAhorro cuentaAhorro, LocalDate fechaInicial, LocalDate fechaFinal){
+        List<Transaccion> transaccionesPeriodo = new ArrayList<>();
+        for (Transaccion transaccion: cuentaAhorro.getListaTransaciones()) {
+            if (transaccion.getFechaTransferencia().equals(fechaInicial) ||
+                    transaccion.getFechaTransferencia().equals(fechaFinal) ||
+                    transaccion.getFechaTransferencia().isAfter(fechaInicial) ||
+                    transaccion.getFechaTransferencia().isBefore(fechaFinal)){
+                        transaccionesPeriodo.add(transaccion);
+            }
+        }
+        return transaccionesPeriodo;
+    }
+
+    /**
+     * Método para obtener transacciones entrantes o salientes en un mes determinado
+     * @param cuentaAhorro
+     * @param mes
+     * @param tipoTransaccion
+     * @return
+     */
+    public double montoTipoTransaccionMes(CuentaAhorro cuentaAhorro, Mes mes, TipoTransaccion tipoTransaccion){
+        LocalDate fechaInicialMes = LocalDate.parse(consultaAnio() + "-" + mes.getId() + "-01");
+        LocalDate fechaFinalMes = LocalDate.parse(consultaAnio() + "-" + mes.getId() + "-" + diaFinMes(mes));
+        List<Transaccion> transaccionesMes = consultaTransacionesPorPeriodo(
+                cuentaAhorro, fechaInicialMes, fechaFinalMes
+        );
+        double montoPorTipoTransaccion = 0;
+        for (Transaccion transaccion: transaccionesMes) {
+            if (transaccion.getTipoTransaccion().equals(tipoTransaccion)){
+                montoPorTipoTransaccion += transaccion.getValorTransferencia();
+            }
+        }
+        return montoPorTipoTransaccion;
+    }
+
+    /**
+     * Método para obtener saldo de transacciones definidas por un mes y una categoría
+     * @param cuentaAhorro
+     * @param mes
+     * @param categoriaGasto
+     */
+    public void montoCategoriaGasto(CuentaAhorro cuentaAhorro, Mes mes, CategoriaGasto categoriaGasto){
+        LocalDate fechaInicialMes = LocalDate.parse(consultaAnio() + "-" + mes.getId() + "-01");
+        LocalDate fechaFinalMes = LocalDate.parse(consultaAnio() + "-" + mes.getId() + "-" + diaFinMes(mes));
+        List<Transaccion> transaccionesMes = consultaTransacionesPorPeriodo(
+                cuentaAhorro, fechaInicialMes, fechaFinalMes
+        );
+        List<Transaccion> transaccionesPorCategoria = new ArrayList<>();
+        for (Transaccion transaccion: transaccionesMes) {
+            if (transaccion.getTipoTransaccion().equals(TipoTransaccion.SALIDA) &&
+                    transaccion.getCategoria().equals(categoriaGasto)){
+                transaccionesPorCategoria.add(transaccion);
+            }
+        }
+
+    }
+
+    /**
+     * Método que reune en un ArrayList las transacciones realizadas en los 30 días posteriores a una fecha dada
+     * @param idCuentaAhorros
+     * @param fechaInicio
+     * @return
+     */
+    public List<Transaccion> clasificarCuentasMes(String idCuentaAhorros, LocalDate fechaInicio){
+        List<Transaccion> transaccionesMes = new ArrayList<Transaccion>();
+        CuentaAhorro cuentaAhorro = obtenerCuentaAhorros(idCuentaAhorros);
+        for (Transaccion transaccion : cuentaAhorro.getListaTransaciones()) {
+            for (LocalDate fecha = fechaInicio;
+                 fecha.isBefore(fechaInicio.plusDays(30));
+                 fecha = fecha.plusDays(1)){
+                    if(transaccion.getFechaTransferencia().equals(fecha));
+                    transaccionesMes.add(transaccion);
+            }
+        }
+        return transaccionesMes;
+    }
+
+    /**
+     * Método que suma las transacciones de un tipo en trasacciones de un mes.
+     * @param idCuentaAhorros
+     * @param fechaInicio
+     * @param tipoTransaccion
+     * @return
+     */
+    public double sumarMontoTransaccionTipo(
+            String idCuentaAhorros, LocalDate fechaInicio, TipoTransaccion tipoTransaccion){
+        double montosMes = 0;
+        List<Transaccion> transaccionesMEs = clasificarCuentasMes(idCuentaAhorros, fechaInicio);
+        for (Transaccion transaccion : transaccionesMEs) {
+            if(transaccion.getTipoTransaccion().equals(tipoTransaccion)){
+                montosMes += transaccion.getValorTransferencia();
+            }
+        } return montosMes;
+    }
+
+    public double calcularPorcentaje(double valor1, double valor2){
+        return ((valor1)/(valor1 + valor2))*100;
+    }
+
+    /**
+     * Método que suma los montos por categoría de una cuenta de ahorros durante un mes.
+     * @param idCuentaAhorros
+     * @param fechaInicio
+     * @param categoriaGasto
+     * @return
+     */
+    public double sumarMontoTransaccionCategoria(
+            String idCuentaAhorros, LocalDate fechaInicio, CategoriaGasto categoriaGasto){
+        double montosMesCategoria = 0;
+        List<Transaccion> transaccionesMEs = clasificarCuentasMes(idCuentaAhorros, fechaInicio);
+        for (Transaccion transaccion : transaccionesMEs) {
+            if(transaccion.getTipoTransaccion().equals(TipoTransaccion.SALIDA)){
+              if (transaccion.getCategoria().equals(categoriaGasto)) {
+                  montosMesCategoria += transaccion.getValorTransferencia();
+              }
+            }
+        } return montosMesCategoria;
+    }
+
+    /**
+     * Método para obtener el ultimo día de mes de acuerdo al mes solicitado
+     * @param mes
+     * @return
+     */
+    public String diaFinMes(Mes mes){
+        String ultimoDiaMes = "";
+        if (mes.equals(Mes.FEBRERO)){
+            ultimoDiaMes = "28";
+        } else if (mes.equals(Mes.ENERO) || mes.equals(Mes.MARZO) || mes.equals(Mes.MAYO) || mes.equals(Mes.JULIO) ||
+            mes.equals(Mes.AGOSTO) || mes.equals(Mes.OCTUBRE) || mes.equals(Mes.DICIEMBRE)) {
+            ultimoDiaMes = "31";
+        } else {
+            ultimoDiaMes = "30";
+        }
+        return ultimoDiaMes;
+    }
+    
+    public String consultaAnio(){
+        Date anio = new Date();
+        SimpleDateFormat getYearFormat = new SimpleDateFormat("yyyy");
+        return getYearFormat.format(anio);
+    }
+
+    public void obtenerGastosIngresosMes(String idCuentaAhorros, LocalDate fechaInicio) {
+        double ingresosMes = sumarMontoTransaccionTipo(idCuentaAhorros, fechaInicio, TipoTransaccion.ENTRADA);
+        double gastosMes = sumarMontoTransaccionTipo(idCuentaAhorros, fechaInicio, TipoTransaccion.SALIDA);
+        double porcentajeIngresosMes = calcularPorcentaje(ingresosMes, gastosMes);
+        double porcentajesGastosMes = calcularPorcentaje(gastosMes, ingresosMes);
+        double gastosViajes = sumarMontoTransaccionCategoria(idCuentaAhorros, fechaInicio, CategoriaGasto.VIAJES);
+        double gastosFacturas = sumarMontoTransaccionCategoria(idCuentaAhorros, fechaInicio, CategoriaGasto.FACTURAS);
+        double gastosGasolina = sumarMontoTransaccionCategoria(idCuentaAhorros, fechaInicio, CategoriaGasto.GASOLINA);
+        double gastosRopa = sumarMontoTransaccionCategoria(idCuentaAhorros, fechaInicio, CategoriaGasto.ROPA);
     }
 }
 
