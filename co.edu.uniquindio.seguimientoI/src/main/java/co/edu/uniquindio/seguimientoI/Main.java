@@ -1,9 +1,11 @@
 package co.edu.uniquindio.seguimientoI;
 import co.edu.uniquindio.seguimientoI.model.Banco;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.Random;
 
 public class Main {
@@ -17,13 +19,6 @@ public class Main {
                 "clave1"
         );
         banco.crearCuentaAhorros("1234561", 300000);
-        LocalDateTime fecha = LocalDateTime.now();
-        LocalDate fecha2 = LocalDate.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        String fecha3 = "2024-02-20";
-
-        LocalDate fechaPrueba = LocalDate.parse(fecha3, formatter);
-        System.out.println(fecha2.isAfter(fechaPrueba));
     }
 
 

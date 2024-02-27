@@ -1,9 +1,13 @@
 package co.edu.uniquindio.seguimientoI.model;
-import co.edu.uniquindio.seguimientoI.enums.CategoriaGasto;
-import co.edu.uniquindio.seguimientoI.enums.TipoTransaccion;
+
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import co.edu.uniquindio.seguimientoI.enums.CategoriaGasto;
+import co.edu.uniquindio.seguimientoI.enums.Mes;
+import co.edu.uniquindio.seguimientoI.enums.TipoTransaccion;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.*;
 
 public class Banco {
     private String nombre;
@@ -345,8 +349,47 @@ public class Banco {
         return transaccionesPeriodo;
     }
 
-    public void ingresosMes(CuentaAhorro cuentaAhorro, String mes){
+    /**
+     * Método para obtener transacciones entrantes o salientes en un mes determinado
+     * @param cuentaAhorro
+     * @param mes
+     * @param tipoTransaccion
+     * @return
+     */
+    public double montoTipoTransaccionMes(CuentaAhorro cuentaAhorro, Mes mes, TipoTransaccion tipoTransaccion){
+        LocalDate fechaInicialMes = LocalDate.parse(consultaAnio() + "-" + mes.getId() + "-01");
+        LocalDate fechaFinalMes = LocalDate.parse(consultaAnio() + "-" + mes.getId() + "-" + diaFinMes(mes));
+        List<Transaccion> transaccionesMes = consultaTransacionesPorPeriodo(
+                cuentaAhorro, fechaInicialMes, fechaFinalMes
+        );
+        double montoPorTipoTransaccion = 0;
+        for (Transaccion transaccion: transaccionesMes) {
+            if (transaccion.getTipoTransaccion().equals(tipoTransaccion)){
+                montoPorTipoTransaccion += transaccion.getValorTransferencia();
+            }
+        }
+        return montoPorTipoTransaccion;
+    }
 
+    /**
+     * Método para obtener saldo de transacciones definidas por un mes y una categoría
+     * @param cuentaAhorro
+     * @param mes
+     * @param categoriaGasto
+     */
+    public void montoCategoriaGasto(CuentaAhorro cuentaAhorro, Mes mes, CategoriaGasto categoriaGasto){
+        LocalDate fechaInicialMes = LocalDate.parse(consultaAnio() + "-" + mes.getId() + "-01");
+        LocalDate fechaFinalMes = LocalDate.parse(consultaAnio() + "-" + mes.getId() + "-" + diaFinMes(mes));
+        List<Transaccion> transaccionesMes = consultaTransacionesPorPeriodo(
+                cuentaAhorro, fechaInicialMes, fechaFinalMes
+        );
+        List<Transaccion> transaccionesPorCategoria = new ArrayList<>();
+        for (Transaccion transaccion: transaccionesMes) {
+            if (transaccion.getTipoTransaccion().equals(TipoTransaccion.SALIDA) &&
+                    transaccion.getCategoria().equals(categoriaGasto)){
+                transaccionesPorCategoria.add(transaccion);
+            }
+        }
 
     }
 
@@ -412,7 +455,31 @@ public class Banco {
         } return montosMesCategoria;
     }
 
-    public void obtenerGastosIngresosMes(String idCuentaAhorros, LocalDate fechaInicio){
+    /**
+     * Método para obtener el ultimo día de mes de acuerdo al mes solicitado
+     * @param mes
+     * @return
+     */
+    public String diaFinMes(Mes mes){
+        String ultimoDiaMes = "";
+        if (mes.equals(Mes.FEBRERO)){
+            ultimoDiaMes = "28";
+        } else if (mes.equals(Mes.ENERO) || mes.equals(Mes.MARZO) || mes.equals(Mes.MAYO) || mes.equals(Mes.JULIO) ||
+            mes.equals(Mes.AGOSTO) || mes.equals(Mes.OCTUBRE) || mes.equals(Mes.DICIEMBRE)) {
+            ultimoDiaMes = "31";
+        } else {
+            ultimoDiaMes = "30";
+        }
+        return ultimoDiaMes;
+    }
+    
+    public String consultaAnio(){
+        Date anio = new Date();
+        SimpleDateFormat getYearFormat = new SimpleDateFormat("yyyy");
+        return getYearFormat.format(anio);
+    }
+
+    public void obtenerGastosIngresosMes(String idCuentaAhorros, LocalDate fechaInicio) {
         double ingresosMes = sumarMontoTransaccionTipo(idCuentaAhorros, fechaInicio, TipoTransaccion.ENTRADA);
         double gastosMes = sumarMontoTransaccionTipo(idCuentaAhorros, fechaInicio, TipoTransaccion.SALIDA);
         double porcentajeIngresosMes = calcularPorcentaje(ingresosMes, gastosMes);
